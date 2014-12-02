@@ -1,31 +1,38 @@
 %% Physical vaule to grayscale transformation and invert-transformation
 clear;
-data_path = 'C:\Users\HYC\Documents\GitHub\TV_CT_artifacts_removal\data\120214';
-file_proj = fullfile(data_path,'proj_800.mat');
+name = '400.mat';
+data_path = 'C:\Users\HYC\Documents\GitHub\TV_CT_artifacts_removal\data\120214_400';
+file_proj = fullfile(data_path,name);
 load(file_proj);
 
-[m,n] = size(proj_800);
-proj = zeros(m,n);
+[m,n] = size(proj);
+% proj_n = zeros(m,n);
 % 0.45 <->3.65605786E-07
-for i = 1:n
-    proj(:,i) = proj_800(:,i) - mean(proj_800(:,i));
-end
+% for i = 1:n
+%     proj_n(:,i) = proj(:,i) - mean(proj(:,i));
+% end
 
 min_v = min(proj(:));
 max_v = max(proj(:));
-
 proc_gs = (proj - min_v)/(max_v - min_v)*255; % transform to gray scale value.
 
 % Set parameters.
-noise_std = 3;             % Standard deviation of image noise.
+noise_std = 4;             % Standard deviation of image noise.
 tau       = 0.85;           % Factor in residual bound.
-
 delta = tau*sqrt(numel(proc_gs))*noise_std;
-[proj_800_tv,info1] = TVdenoise(proc_gs,delta);
+[proj_tv,info1] = TVdenoise(proc_gs,delta);
 
-save(fullfile(data_path,'proj_800_tv.mat'),'proj_800_tv');
+proj_tv = proj_tv /255 * (max_v - min_v) + min_v;
+varname = strcat('tv_',name);
+save(fullfile(data_path,varname),'proj_tv');
 
-recon_800 = recon(proj_800_tv);
-save(fullfile(data_path,'recon_800.mat'),'recon_800');
+
+recon_tv = recon(proj_tv);
+varname = strcat('recon_tv_',name);
+save(fullfile(data_path,varname),'recon_tv');
+
+recon_normal = recon(proj);
+varname = strcat('recon_normal_',name);
+save(fullfile(data_path,varname),'recon_normal');
 
 
