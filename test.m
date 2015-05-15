@@ -1,10 +1,11 @@
 %% Physical vaule to grayscale transformation and invert-transformation
 clear;
-name = '400.mat';
-data_path = 'C:\Users\HYC\Documents\GitHub\TV_CT_artifacts_removal\data\120214_400';
-file_proj = fullfile(data_path,name);
-load(file_proj);
-
+proj_name = 'proj_800.mat';
+data_path = '/Users/hyc/Documents/Github/TV_CT_artifacts_removal/data/150516';
+% file_proj = fullfile(data_path,name);
+% load(file_proj);
+load(proj_name);
+proj = proj_800;
 [m,n] = size(proj);
 % proj_n = zeros(m,n);
 % 0.45 <->3.65605786E-07
@@ -23,16 +24,16 @@ delta = tau*sqrt(numel(proc_gs))*noise_std;
 [proj_tv,info1] = TVdenoise(proc_gs,delta);
 
 proj_tv = proj_tv /255 * (max_v - min_v) + min_v;
-varname = strcat('tv_',name);
+varname = strcat('tv_',proj_name);
 save(fullfile(data_path,varname),'proj_tv');
 
 
 recon_tv = recon(proj_tv);
-varname = strcat('recon_tv_',name);
+varname = strcat('recon_tv_',proj_name);
 save(fullfile(data_path,varname),'recon_tv');
 
 recon_normal = recon(proj);
-varname = strcat('recon_normal_',name);
+varname = strcat('recon_normal_',proj_name);
 save(fullfile(data_path,varname),'recon_normal');
 
 
